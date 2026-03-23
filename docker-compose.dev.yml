@@ -1,0 +1,25 @@
+# ============================================================
+# Development Docker Compose (no Nginx, no SSL)
+# ============================================================
+# Usage:  docker-compose -f docker-compose.dev.yml up -d
+# ============================================================
+
+version: "3.9"
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+      - DATABASE_URL=sqlite+aiosqlite:///./extraction.db
+      - TESSERACT_CMD=/usr/bin/tesseract
+    volumes:
+      - ./uploads:/app/uploads
+      - ./databases:/app/databases
+      - ./email_logs:/app/email_logs
+    restart: unless-stopped

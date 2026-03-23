@@ -70,7 +70,9 @@
       "Bash(python -c \"from app.extraction.pdf_extractor import PDFExtractor; print\\(''Import OK''\\)\")",
       "Bash(python -c \"from app.extraction.pdf_extractor import PDFExtractor; print\\(''OK''\\)\")",
       "Bash(find D:/targeticon/data-extraction -not -path */.venv/* -not -path */__pycache__/* -type d)",
-      "Bash(pkill -f \"uvicorn app.main:app\")"
+      "Bash(pkill -f \"uvicorn app.main:app\")",
+      "Bash(docker build:*)",
+      "Bash(ls -la Dockerfile docker-compose*.yml .env* .dockerignore deploy.sh nginx/nginx.conf)"
     ]
   }
 }
