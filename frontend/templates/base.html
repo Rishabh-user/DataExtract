@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}DataExtract Platform{% endblock %}</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<!-- ── Sidebar ────────────────────────────────────────────────── -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <a href="/" class="logo-mark">
+      <div class="logo-icon">⚡</div>
+      <div>
+        <div class="logo-name">DataExtract</div>
+        <div class="logo-sub">Universal Extraction Platform</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Main</div>
+    <a href="/"          class="nav-item"><span class="nav-icon">🏠</span> Dashboard</a>
+    <a href="/upload"    class="nav-item"><span class="nav-icon">📤</span> Upload Document</a>
+    <a href="/documents" class="nav-item"><span class="nav-icon">📂</span> Documents</a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Tools</div>
+    <a href="/keys"  class="nav-item"><span class="nav-icon">🔑</span> API Keys</a>
+    <a href="/email" class="nav-item"><span class="nav-icon">📧</span> Email Templates</a>
+    <a href="/admin" class="nav-item"><span class="nav-icon">🗄️</span> Database</a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">API</div>
+    <a href="/docs"   class="nav-item" target="_blank"><span class="nav-icon">📖</span> Swagger UI</a>
+    <a href="/redoc"  class="nav-item" target="_blank"><span class="nav-icon">📜</span> ReDoc</a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div id="admin-session-bar" class="hidden" style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:var(--primary);border-radius:8px;margin-bottom:8px">
+      <span style="font-size:0.78rem;font-weight:600;color:#fff">👤 Superadmin</span>
+      <button onclick="logout()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;font-size:0.72rem;padding:3px 8px;border-radius:4px;cursor:pointer">Logout</button>
+    </div>
+    <div class="api-key-display" id="sidebar-key-area" title="Click to change API key">
+      <div class="api-key-label">Active API Key</div>
+      <div class="api-key-value hidden" id="sidebar-key-value"></div>
+      <div class="api-key-none"  id="sidebar-key-none">⚠ No key set — <a href="/login" style="color:var(--primary)">Login</a></div>
+    </div>
+  </div>
+</aside>
+
+<!-- ── Main ───────────────────────────────────────────────────── -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">{% block page_title %}DataExtract{% endblock %}</div>
+    <div class="topbar-actions">
+      {% block topbar_actions %}{% endblock %}
+    </div>
+  </div>
+
+  <div class="content">
+    {% block content %}{% endblock %}
+  </div>
+</div>
+
+<!-- ── API Key Modal ──────────────────────────────────────────── -->
+<div class="modal-overlay hidden" id="api-key-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>🔑 Set API Key</h3>
+      <button class="modal-close" onclick="closeApiKeyModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="text-muted text-sm mb-2">
+        Enter an existing API key, or go to <a href="/keys">Keys page</a> to generate one.
+      </p>
+      <div class="form-group">
+        <label>API Key</label>
+        <input type="text" id="modal-key-input" placeholder="Paste your x-api-key here…" style="font-family:monospace">
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="clearAndClose()">Clear key</button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeApiKeyModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveApiKeyFromModal()">Save Key</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Toast Container ────────────────────────────────────────── -->
+<div id="toast-container"></div>
+
+<script src="/static/js/app.js"></script>
+<script>
+function clearAndClose() {
+  ApiKey.clear();
+  document.getElementById('modal-key-input').value = '';
+  closeApiKeyModal();
+  Toast.info('API key cleared.');
+}
+function logout() {
+  ApiKey.clear();
+  window.location.href = '/login';
+}
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

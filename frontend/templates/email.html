@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Email Templates — DataExtract{% endblock %}
+{% block page_title %}Email Templates{% endblock %}
+
+{% block content %}
+<div class="grid-2" style="align-items:start">
+
+  <!-- Send Email Form -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Send Email</div>
+        <div class="card-subtitle">Send using a built-in HTML template</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Template</label>
+      <select id="templateSelect" onchange="onTemplateChange()">
+        <option value="extraction_summary">📄 Extraction Summary — send extracted content preview</option>
+        <option value="api_key_created">🔑 API Key Created — send key details to a user</option>
+        <option value="welcome">👋 Welcome — onboarding email with quick-start guide</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Recipient Email <span class="text-danger">*</span></label>
+      <input type="email" id="emailTo" placeholder="recipient@example.com">
+    </div>
+
+    <!-- extraction_summary fields -->
+    <div id="fieldDocumentId" class="form-group">
+      <label>Document ID <span class="text-muted text-xs">(for extraction_summary)</span></label>
+      <input type="number" id="docIdInput" placeholder="e.g. 1">
+    </div>
+
+    <!-- api_key_created fields -->
+    <div id="fieldApiKey" class="hidden">
+      <div class="form-group">
+        <label>Project Name</label>
+        <input type="text" id="projectNameInput" placeholder="e.g. HR Portal">
+      </div>
+      <div class="form-group">
+        <label>API Key Preview <span class="text-muted text-xs">(paste the key)</span></label>
+        <input type="text" id="apiKeyPreviewInput" placeholder="Paste generated API key…" style="font-family:monospace">
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="sendEmail()" style="width:100%;justify-content:center;padding:12px">
+      📧 Send Email
+    </button>
+
+    <div id="sendResult" class="hidden mt-2"></div>
+
+    <div class="alert alert-info mt-2 text-sm">
+      <div>
+        ℹ️ <strong>Email Backend:</strong> <code>dummy</code> — emails are logged to
+        <code>email_logs/</code> instead of actually being sent.
+        Set <code>EMAIL_BACKEND=smtp</code> in <code>.env</code> to enable real delivery.
+      </div>
+    </div>
+  </div>
+
+  <!-- Template Previews -->
+  <div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Available Templates</div></div>
+
+      <div class="page-block" style="margin-bottom:16px">
+        <div class="page-header">📄 extraction_summary</div>
+        <div style="padding:12px;background:var(--bg);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius-sm) var(--radius-sm);font-size:0.83rem">
+          Sends extracted content preview, file metadata (name, type, source, status, page count),
+          and a link to view the full extraction.
+          <br><strong>Required:</strong> document_id
+        </div>
+      </div>
+
+      <div class="page-block" style="margin-bottom:16px">
+        <div class="page-header">🔑 api_key_created</div>
+        <div style="padding:12px;background:var(--bg);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius-sm) var(--radius-sm);font-size:0.83rem">
+          Sends the generated API key in a styled box with permissions table (actions & file types).
+          <br><strong>Required:</strong> project_name, api_key_preview
+        </div>
+      </div>
+
+      <div class="page-block">
+        <div class="page-header">👋 welcome</div>
+        <div style="padding:12px;background:var(--bg);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius-sm) var(--radius-sm);font-size:0.83rem">
+          Onboarding email with platform overview, supported formats table, and quick-start links.
+          <br><strong>Required:</strong> nothing
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">Email Logs</div></div>
+      <p class="text-sm text-muted mb-2">
+        In dummy mode, every sent email is saved as an HTML file in the <code>email_logs/</code> directory.
+        You can open those files directly in your browser to preview the rendered email.
+      </p>
+      <button class="btn btn-outline btn-sm" onclick="loadLogs()">Load Log Files</button>
+      <div id="logList" class="mt-2"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/email.js"></script>
+{% endblock %}

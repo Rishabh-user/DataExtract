@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — DataExtract{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block topbar_actions %}
+<button class="btn btn-primary btn-sm" onclick="location.href='/upload'">📤 Upload Document</button>
+{% endblock %}
+
+{% block content %}
+<!-- Stats -->
+<div class="stats-grid" id="statsGrid">
+  <div class="stat-card">
+    <span class="stat-icon">📄</span>
+    <div class="stat-label">Total Documents</div>
+    <div class="stat-value" id="stat-total">—</div>
+    <div class="stat-sub">All uploaded files</div>
+  </div>
+  <div class="stat-card">
+    <span class="stat-icon">✅</span>
+    <div class="stat-label">Completed</div>
+    <div class="stat-value text-success" id="stat-completed">—</div>
+    <div class="stat-sub">Successfully extracted</div>
+  </div>
+  <div class="stat-card">
+    <span class="stat-icon">📑</span>
+    <div class="stat-label">Pages Extracted</div>
+    <div class="stat-value" id="stat-pages">—</div>
+    <div class="stat-sub">Total content pages</div>
+  </div>
+  <div class="stat-card">
+    <span class="stat-icon">🔑</span>
+    <div class="stat-label">Active API Keys</div>
+    <div class="stat-value" id="stat-keys">—</div>
+    <div class="stat-sub">Active project keys</div>
+  </div>
+</div>
+
+<div class="grid-2">
+  <!-- File Type Breakdown -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">File Type Breakdown</div>
+        <div class="card-subtitle">Documents by type</div>
+      </div>
+    </div>
+    <div id="typeBreakdown">
+      <div class="empty-state"><div class="spinner spinner-dark"></div></div>
+    </div>
+  </div>
+
+  <!-- Recent Documents -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Recent Documents</div>
+        <div class="card-subtitle">Last 5 uploads</div>
+      </div>
+      <a href="/documents" class="btn btn-ghost btn-sm">View all →</a>
+    </div>
+    <div id="recentDocs">
+      <div class="empty-state"><div class="spinner spinner-dark"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Quick Actions</div>
+  </div>
+  <div class="grid-4">
+    <a href="/upload"    class="btn btn-outline" style="justify-content:center;padding:16px">📤 Upload File</a>
+    <a href="/documents" class="btn btn-outline" style="justify-content:center;padding:16px">🔍 Search Docs</a>
+    <a href="/keys"      class="btn btn-outline" style="justify-content:center;padding:16px">🔑 Manage Keys</a>
+    <a href="/email"     class="btn btn-outline" style="justify-content:center;padding:16px">📧 Send Email</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/dashboard.js"></script>
+{% endblock %}

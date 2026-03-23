@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Upload Document — DataExtract{% endblock %}
+{% block page_title %}Upload Document{% endblock %}
+
+{% block content %}
+<div class="grid-2" style="align-items:start">
+  <!-- Upload Form -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Upload & Extract</div>
+        <div class="card-subtitle">Supports PDF, Excel, Word, Email, CSV, PowerPoint, Images</div>
+      </div>
+    </div>
+
+    <div class="upload-zone" id="dropZone">
+      <div class="uz-icon">📁</div>
+      <div class="uz-title">Drop your file here or click to browse</div>
+      <div class="uz-sub">Maximum file size: 100 MB</div>
+      <div class="uz-types">.pdf · .xlsx · .xls · .docx · .doc · .eml · .msg · .csv · .pptx · .png · .jpg · .jpeg · .tiff · .bmp</div>
+      <input type="file" id="fileInput" style="display:none"
+             accept=".pdf,.xlsx,.xls,.docx,.doc,.eml,.msg,.csv,.pptx,.ppt,.png,.jpg,.jpeg,.tiff,.bmp">
+    </div>
+
+    <div id="fileInfo" class="alert alert-info hidden mt-2"></div>
+
+    <div class="form-group mt-2">
+      <label>Source Label <span class="text-muted text-xs">(optional)</span></label>
+      <input type="text" id="source" placeholder="e.g. client-portal, hr-inbox">
+    </div>
+
+    <button class="btn btn-primary" id="uploadBtn" disabled style="width:100%;justify-content:center;padding:12px">
+      📤 Upload &amp; Extract
+    </button>
+
+    <div id="uploadProgress" class="hidden mt-2">
+      <div class="flex-between text-sm mb-1">
+        <span id="progressLabel">Uploading…</span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress">
+        <div class="progress-bar" id="progressBar" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div id="uploadResult" class="hidden mt-2"></div>
+  </div>
+
+  <!-- Instructions & Tips -->
+  <div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Supported Formats</div></div>
+      <table>
+        <thead><tr><th>Format</th><th>Extensions</th><th>Library</th></tr></thead>
+        <tbody>
+          <tr><td>📄 PDF</td><td class="td-mono">.pdf</td><td>pdfplumber, PyMuPDF</td></tr>
+          <tr><td>📊 Excel</td><td class="td-mono">.xlsx, .xls</td><td>pandas, openpyxl</td></tr>
+          <tr><td>📝 Word</td><td class="td-mono">.docx, .doc</td><td>python-docx</td></tr>
+          <tr><td>📧 Email</td><td class="td-mono">.eml, .msg</td><td>stdlib, extract-msg</td></tr>
+          <tr><td>🗃 CSV</td><td class="td-mono">.csv</td><td>pandas</td></tr>
+          <tr><td>📑 PowerPoint</td><td class="td-mono">.pptx, .ppt</td><td>python-pptx</td></tr>
+          <tr><td>🖼 Image (OCR)</td><td class="td-mono">.png, .jpg, .jpeg, .tiff, .bmp</td><td>Tesseract + OpenCV</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">💡 Tips</div></div>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:10px">
+        <li class="text-sm">🔑 Make sure your API key has <strong>upload</strong> permission for the file type you are uploading.</li>
+        <li class="text-sm">📐 Large PDFs may take a few seconds — the page will show a live progress indicator.</li>
+        <li class="text-sm">🖼 For best OCR results, use high-resolution images (300 DPI+).</li>
+        <li class="text-sm">🔍 After extraction, use the <a href="/documents">Documents</a> page to search &amp; filter.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/upload.js"></script>
+{% endblock %}

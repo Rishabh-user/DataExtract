@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}View Document — DataExtract{% endblock %}
+{% block page_title %}Document Details{% endblock %}
+
+{% block topbar_actions %}
+<button class="btn btn-outline btn-sm" onclick="history.back()">← Back</button>
+<button class="btn btn-primary btn-sm" id="emailBtn" onclick="openEmailModal()" style="display:none">📧 Send by Email</button>
+{% endblock %}
+
+{% block content %}
+<!-- Loading -->
+<div id="loadingState" class="card text-center" style="padding:48px">
+  <div class="spinner spinner-dark" style="width:32px;height:32px;margin:0 auto 12px"></div>
+  <p class="text-muted">Loading document…</p>
+</div>
+
+<!-- Error -->
+<div id="errorState" class="hidden">
+  <div class="alert alert-error" id="errorMsg"></div>
+  <a href="/documents" class="btn btn-outline">← Back to Documents</a>
+</div>
+
+<!-- Document Header -->
+<div id="docHeader" class="card hidden">
+  <div class="flex-between" style="flex-wrap:wrap;gap:12px">
+    <div>
+      <h2 id="docFileName" style="font-size:1.2rem;font-weight:700;margin-bottom:6px"></h2>
+      <div style="display:flex;gap:12px;flex-wrap:wrap" class="text-sm text-muted">
+        <span>🗂 Type: <strong id="docType"></strong></span>
+        <span>📍 Source: <strong id="docSource"></strong></span>
+        <span>📅 Uploaded: <strong id="docDate"></strong></span>
+        <span>💾 Size: <strong id="docSize"></strong></span>
+      </div>
+    </div>
+    <span id="docStatus" class="badge"></span>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div id="docTabs" class="hidden">
+  <div class="tabs">
+    <span class="tab active" onclick="switchTab('content', this)">📄 Extracted Content</span>
+    <span class="tab"        onclick="switchTab('metadata', this)">🔍 Metadata</span>
+    <span class="tab"        onclick="switchTab('raw', this)">{ } Raw JSON</span>
+  </div>
+
+  <!-- Content Tab -->
+  <div id="tab-content">
+    <div id="pagesContainer"></div>
+  </div>
+
+  <!-- Metadata Tab -->
+  <div id="tab-metadata" class="hidden">
+    <div class="card">
+      <div id="metadataContainer"></div>
+    </div>
+  </div>
+
+  <!-- Raw JSON Tab -->
+  <div id="tab-raw" class="hidden">
+    <div class="card">
+      <div class="flex-between mb-2">
+        <span class="text-sm text-muted">Full API response</span>
+        <button class="btn btn-outline btn-sm" onclick="copyRaw()">📋 Copy JSON</button>
+      </div>
+      <div class="content-block" id="rawJson" style="max-height:600px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Email Modal -->
+<div class="modal-overlay hidden" id="emailModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>📧 Send Extraction Summary</h3>
+      <button class="modal-close" onclick="Modal.hide('emailModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Recipient Email</label>
+        <input type="email" id="emailTo" placeholder="recipient@example.com">
+      </div>
+      <div class="alert alert-info text-sm">Template: <strong>extraction_summary</strong> — sends extracted content preview to the recipient.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="Modal.hide('emailModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="sendEmail()">Send Email</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>const DOC_ID = {{ document_id }};</script>
+<script src="/static/js/view.js"></script>
+{% endblock %}

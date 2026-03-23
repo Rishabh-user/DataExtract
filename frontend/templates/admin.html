@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Database — DataExtract{% endblock %}
+{% block page_title %}Database Viewer{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div>
+      <div class="card-title">Browse Tables</div>
+      <div class="card-subtitle">Read-only view of the SQLite database</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <select id="tableSelect" onchange="loadTable(1)" style="width:auto;margin-bottom:0">
+        <option value="documents">documents</option>
+        <option value="extracted_data">extracted_data</option>
+        <option value="api_keys">api_keys</option>
+      </select>
+      <button class="btn btn-outline btn-sm" onclick="loadTable(1)">↺ Refresh</button>
+    </div>
+  </div>
+
+  <!-- Stats bar -->
+  <div id="tableStats" class="flex-between text-sm text-muted mb-2 hidden">
+    <span>Table: <strong id="statTable"></strong> &nbsp;|&nbsp; Total rows: <strong id="statTotal"></strong></span>
+    <span>Page <strong id="statPage"></strong> of <strong id="statPages"></strong></span>
+  </div>
+
+  <!-- Loading -->
+  <div id="dbLoading" class="empty-state">
+    <div class="spinner spinner-dark" style="width:28px;height:28px;margin:0 auto 10px"></div>
+    <p>Loading table data…</p>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap hidden" id="dbTable">
+    <table>
+      <thead id="dbHead"></thead>
+      <tbody id="dbBody"></tbody>
+    </table>
+  </div>
+
+  <div id="dbEmpty" class="empty-state hidden">
+    <div class="empty-icon">🗄️</div>
+    <p>No rows found in this table.</p>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" id="dbPagination"></div>
+</div>
+
+<!-- Info cards -->
+<div class="grid-3">
+  <div class="card" style="padding:18px">
+    <div class="text-sm fw-600 mb-1">🗃 documents</div>
+    <div class="text-xs text-muted">id, file_name, file_type, source, upload_date, file_path, file_size_bytes, status</div>
+  </div>
+  <div class="card" style="padding:18px">
+    <div class="text-sm fw-600 mb-1">📑 extracted_data</div>
+    <div class="text-xs text-muted">id, document_id, page_number, content (text), metadata (JSON), created_at</div>
+  </div>
+  <div class="card" style="padding:18px">
+    <div class="text-sm fw-600 mb-1">🔑 api_keys</div>
+    <div class="text-xs text-muted">id, project_name, api_key (masked), permissions (JSON), created_at, status</div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/admin.js"></script>
+{% endblock %}

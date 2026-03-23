@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% block title %}API Keys — DataExtract{% endblock %}
+{% block page_title %}API Key Management{% endblock %}
+
+{% block topbar_actions %}
+<button class="btn btn-primary btn-sm" onclick="Modal.show('generateModal')">+ Generate New Key</button>
+{% endblock %}
+
+{% block content %}
+
+<!-- Key list -->
+<div class="card">
+  <div class="card-header">
+    <div>
+      <div class="card-title">All API Keys</div>
+      <div class="card-subtitle">Manage access and permissions per project</div>
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="loadKeys()">↺ Refresh</button>
+  </div>
+
+  <div id="keysLoading" class="empty-state">
+    <div class="spinner spinner-dark" style="width:28px;height:28px;margin:0 auto 10px"></div>
+    <p>Loading keys…</p>
+  </div>
+
+  <div class="table-wrap hidden" id="keysTable">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Project Name</th>
+          <th>Actions</th>
+          <th>File Types</th>
+          <th>Created</th>
+          <th>Status</th>
+          <th style="text-align:right">Manage</th>
+        </tr>
+      </thead>
+      <tbody id="keysBody"></tbody>
+    </table>
+  </div>
+
+  <div id="keysEmpty" class="empty-state hidden">
+    <div class="empty-icon">🔑</div>
+    <p>No API keys yet. Generate your first key to get started.</p>
+    <button class="btn btn-primary mt-2" onclick="Modal.show('generateModal')">Generate Key</button>
+  </div>
+</div>
+
+<!-- Permission guide -->
+<div class="card">
+  <div class="card-header"><div class="card-title">Permission Reference</div></div>
+  <div class="grid-2">
+    <div>
+      <h4 class="text-sm fw-600 mb-1">Actions</h4>
+      <table>
+        <thead><tr><th>Action</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge badge-primary">upload</span></td><td class="text-sm">Upload files and trigger extraction</td></tr>
+          <tr><td><span class="badge badge-primary">view</span></td><td class="text-sm">View extracted document content</td></tr>
+          <tr><td><span class="badge badge-primary">filter</span></td><td class="text-sm">Filter and list documents</td></tr>
+          <tr><td><span class="badge badge-primary">search</span></td><td class="text-sm">Full-text search across content</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h4 class="text-sm fw-600 mb-1">File Type Restriction</h4>
+      <p class="text-sm text-muted" style="margin-bottom:10px">Restrict which file types a key can upload. Use <code>*</code> for all types.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <span class="badge badge-info">.pdf</span>
+        <span class="badge badge-info">.xlsx / .xls</span>
+        <span class="badge badge-info">.docx / .doc</span>
+        <span class="badge badge-info">.csv</span>
+        <span class="badge badge-info">.eml / .msg</span>
+        <span class="badge badge-info">.pptx</span>
+        <span class="badge badge-info">.png / .jpg</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Generate Key Modal ───────────────────────────────────────── -->
+<div class="modal-overlay hidden" id="generateModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>🔑 Generate API Key</h3>
+      <button class="modal-close" onclick="Modal.hide('generateModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Project Name <span class="text-danger">*</span></label>
+        <input type="text" id="genProjectName" placeholder="e.g. HR Portal, Finance App…">
+      </div>
+
+      <div class="perm-section">
+        <h4>Allowed Actions</h4>
+        <div class="checkbox-group" id="genActions">
+          <label class="checkbox-item checked"><input type="checkbox" value="upload"  checked> Upload</label>
+          <label class="checkbox-item checked"><input type="checkbox" value="view"    checked> View</label>
+          <label class="checkbox-item checked"><input type="checkbox" value="filter"  checked> Filter</label>
+          <label class="checkbox-item checked"><input type="checkbox" value="search"  checked> Search</label>
+        </div>
+      </div>
+
+      <div class="perm-section mt-2">
+        <h4>Allowed File Types</h4>
+        <div style="margin-bottom:8px">
+          <label class="checkbox-item" id="allTypesToggle" style="border-color:var(--primary)">
+            <input type="checkbox" id="allTypesCheck" checked onchange="toggleAllTypes(this)"> All Types (*)
+          </label>
+        </div>
+        <div class="checkbox-group" id="genFileTypes">
+          <label class="checkbox-item"><input type="checkbox" value=".pdf">   PDF</label>
+          <label class="checkbox-item"><input type="checkbox" value=".xlsx">  Excel (.xlsx)</label>
+          <label class="checkbox-item"><input type="checkbox" value=".xls">   Excel (.xls)</label>
+          <label class="checkbox-item"><input type="checkbox" value=".docx">  Word (.docx)</label>
+          <label class="checkbox-item"><input type="checkbox" value=".doc">   Word (.doc)</label>
+          <label class="checkbox-item"><input type="checkbox" value=".csv">   CSV</label>
+          <label class="checkbox-item"><input type="checkbox" value=".eml">   Email (.eml)</label>
+          <label class="checkbox-item"><input type="checkbox" value=".msg">   Email (.msg)</label>
+          <label class="checkbox-item"><input type="checkbox" value=".pptx">  PowerPoint</label>
+          <label class="checkbox-item"><input type="checkbox" value=".png">   Image (PNG)</label>
+          <label class="checkbox-item"><input type="checkbox" value=".jpg">   Image (JPG)</label>
+          <label class="checkbox-item"><input type="checkbox" value=".jpeg">  Image (JPEG)</label>
+        </div>
+      </div>
+
+      <div class="form-group mt-2">
+        <label>Database URL <span class="text-muted text-xs">(optional — leave blank for local SQLite)</span></label>
+        <input type="text" id="genDbUrl" placeholder="postgresql+asyncpg://user:pass@host:5432/project_db">
+        <small class="text-muted">For remote project databases on another server. Leave empty to auto-create a local database.</small>
+      </div>
+
+      <div class="form-group mt-2">
+        <label>Send Key via Email <span class="text-muted text-xs">(optional)</span></label>
+        <input type="email" id="genEmailTo" placeholder="recipient@example.com">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="Modal.hide('generateModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="generateKey()" id="genBtn">Generate Key</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Key Reveal Modal ─────────────────────────────────────────── -->
+<div class="modal-overlay hidden" id="revealModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>✅ Key Generated Successfully</h3>
+      <button class="modal-close" onclick="Modal.hide('revealModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-warning">
+        ⚠️ <strong>Copy this key now.</strong> It will not be shown again after you close this dialog.
+      </div>
+      <label>Your API Key</label>
+      <div class="key-reveal" id="revealKey">
+        <button class="key-copy-btn" onclick="copyText(document.getElementById('revealKey').dataset.key, this)">Copy</button>
+        <span id="revealKeyText"></span>
+      </div>
+      <div class="mt-2 text-sm text-muted">Project: <strong id="revealProject"></strong></div>
+      <div class="mt-1">
+        <button class="btn btn-outline btn-sm" onclick="useThisKey()">💾 Set as Active Key</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="Modal.hide('revealModal'); loadKeys()">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Edit Permissions Modal ───────────────────────────────────── -->
+<div class="modal-overlay hidden" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>✏️ Edit Key Permissions</h3>
+      <button class="modal-close" onclick="Modal.hide('editModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editKeyId">
+      <div class="form-group">
+        <label>Project</label>
+        <input type="text" id="editProjectName" disabled style="background:var(--bg)">
+      </div>
+      <div class="perm-section">
+        <h4>Allowed Actions</h4>
+        <div class="checkbox-group" id="editActions">
+          <label class="checkbox-item"><input type="checkbox" value="upload"> Upload</label>
+          <label class="checkbox-item"><input type="checkbox" value="view">   View</label>
+          <label class="checkbox-item"><input type="checkbox" value="filter"> Filter</label>
+          <label class="checkbox-item"><input type="checkbox" value="search"> Search</label>
+        </div>
+      </div>
+      <div class="perm-section mt-2">
+        <h4>Allowed File Types</h4>
+        <div style="margin-bottom:8px">
+          <label class="checkbox-item" id="editAllTypesToggle">
+            <input type="checkbox" id="editAllTypesCheck" onchange="toggleEditAllTypes(this)"> All Types (*)
+          </label>
+        </div>
+        <div class="checkbox-group" id="editFileTypes">
+          <label class="checkbox-item"><input type="checkbox" value=".pdf">  PDF</label>
+          <label class="checkbox-item"><input type="checkbox" value=".xlsx"> Excel (.xlsx)</label>
+          <label class="checkbox-item"><input type="checkbox" value=".xls">  Excel (.xls)</label>
+          <label class="checkbox-item"><input type="checkbox" value=".docx"> Word (.docx)</label>
+          <label class="checkbox-item"><input type="checkbox" value=".doc">  Word (.doc)</label>
+          <label class="checkbox-item"><input type="checkbox" value=".csv">  CSV</label>
+          <label class="checkbox-item"><input type="checkbox" value=".eml">  Email (.eml)</label>
+          <label class="checkbox-item"><input type="checkbox" value=".msg">  Email (.msg)</label>
+          <label class="checkbox-item"><input type="checkbox" value=".pptx"> PowerPoint</label>
+          <label class="checkbox-item"><input type="checkbox" value=".png">  Image (PNG)</label>
+          <label class="checkbox-item"><input type="checkbox" value=".jpg">  Image (JPG)</label>
+          <label class="checkbox-item"><input type="checkbox" value=".jpeg"> Image (JPEG)</label>
+        </div>
+      </div>
+      <div class="perm-section mt-2">
+        <h4>Status</h4>
+        <select id="editStatus">
+          <option value="active">Active</option>
+          <option value="revoked">Revoked</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="Modal.hide('editModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/keys.js"></script>
+{% endblock %}

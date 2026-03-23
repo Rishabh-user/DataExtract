@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "FastAPI Dev Server",
+      "runtimeExecutable": ".venv/Scripts/python",
+      "runtimeArgs": ["-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"],
+      "port": 8000
+    },
+    {
+      "name": "PostgreSQL (Docker)",
+      "runtimeExecutable": "docker",
+      "runtimeArgs": ["compose", "up", "postgres"],
+      "port": 5432
+    },
+    {
+      "name": "Elasticsearch (Docker)",
+      "runtimeExecutable": "docker",
+      "runtimeArgs": ["compose", "up", "elasticsearch"],
+      "port": 9200
+    }
+  ]
+}

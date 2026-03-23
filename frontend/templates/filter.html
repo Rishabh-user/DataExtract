@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block title %}Documents — DataExtract{% endblock %}
+{% block page_title %}Documents{% endblock %}
+
+{% block topbar_actions %}
+<button class="btn btn-primary btn-sm" onclick="location.href='/upload'">📤 Upload New</button>
+{% endblock %}
+
+{% block content %}
+<!-- Search + Filter Bar -->
+<div class="card">
+  <div class="tabs" id="modeTabs">
+    <span class="tab active" onclick="setMode('filter', this)">🔽 Filter</span>
+    <span class="tab"        onclick="setMode('search', this)">🔍 Full-Text Search</span>
+  </div>
+
+  <!-- Filter Mode -->
+  <div id="filterPanel">
+    <div class="grid-3">
+      <div class="form-group">
+        <label>File Type</label>
+        <select id="filterType">
+          <option value="">All Types</option>
+          <option value=".pdf">PDF</option>
+          <option value=".xlsx">Excel (.xlsx)</option>
+          <option value=".xls">Excel (.xls)</option>
+          <option value=".docx">Word (.docx)</option>
+          <option value=".doc">Word (.doc)</option>
+          <option value=".eml">Email (.eml)</option>
+          <option value=".msg">Email (.msg)</option>
+          <option value=".csv">CSV</option>
+          <option value=".pptx">PowerPoint</option>
+          <option value=".png">Image (PNG)</option>
+          <option value=".jpg">Image (JPG)</option>
+          <option value=".jpeg">Image (JPEG)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Source</label>
+        <input type="text" id="filterSource" placeholder="e.g. client-portal">
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select id="filterStatus">
+          <option value="">All Statuses</option>
+          <option value="completed">Completed</option>
+          <option value="failed">Failed</option>
+          <option value="processing">Processing</option>
+          <option value="pending">Pending</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label>From Date</label>
+        <input type="date" id="dateFrom">
+      </div>
+      <div class="form-group">
+        <label>To Date</label>
+        <input type="date" id="dateTo">
+      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary" onclick="runFilter()">Apply Filters</button>
+      <button class="btn btn-outline" onclick="clearFilters()">Clear</button>
+    </div>
+  </div>
+
+  <!-- Search Mode -->
+  <div id="searchPanel" class="hidden">
+    <div class="form-group">
+      <label>Search Query</label>
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchQuery" placeholder="Search across all extracted content…" onkeydown="if(event.key==='Enter') runSearch()">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label>Filter by File Type <span class="text-muted text-xs">(optional)</span></label>
+        <select id="searchType">
+          <option value="">All Types</option>
+          <option value=".pdf">PDF</option>
+          <option value=".xlsx">Excel</option>
+          <option value=".docx">Word</option>
+          <option value=".csv">CSV</option>
+          <option value=".eml">Email</option>
+          <option value=".pptx">PowerPoint</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Filter by Source <span class="text-muted text-xs">(optional)</span></label>
+        <input type="text" id="searchSource" placeholder="e.g. client-portal">
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="runSearch()">🔍 Search</button>
+  </div>
+</div>
+
+<!-- Results -->
+<div class="card">
+  <div class="card-header">
+    <div>
+      <div class="card-title" id="resultsTitle">All Documents</div>
+      <div class="card-subtitle text-sm" id="resultsMeta"></div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <select id="pageSizeSelect" onchange="changePageSize(this.value)" style="width:auto;margin-bottom:0">
+        <option value="20">20 / page</option>
+        <option value="50">50 / page</option>
+        <option value="100">100 / page</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div id="loadingRow" class="empty-state hidden">
+    <div class="spinner spinner-dark" style="width:28px;height:28px;margin:0 auto 10px"></div>
+    <p>Loading…</p>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap" id="tableWrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>File Name</th>
+          <th>Type</th>
+          <th>Source</th>
+          <th>Size</th>
+          <th>Uploaded</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="resultsBody">
+        <tr><td colspan="8" class="text-center text-muted" style="padding:32px">Use filters above or click "Apply Filters" to load documents.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Search Results (full-text) -->
+  <div id="searchResultsContainer" class="hidden"></div>
+
+  <!-- Pagination -->
+  <div class="pagination" id="pagination"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/filter.js"></script>
+{% endblock %}

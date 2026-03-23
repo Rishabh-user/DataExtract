@@ -1,0 +1,46 @@
+# Web framework
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.19
+jinja2==3.1.5
+pydantic-settings==2.7.1
+
+# Database
+sqlalchemy[asyncio]==2.0.36
+aiosqlite==0.20.0
+
+# PostgreSQL (uncomment for production / Docker)
+# asyncpg==0.30.0
+# psycopg2-binary==2.9.10
+
+# Search (optional — only needed if ELASTICSEARCH_ENABLED=true)
+# elasticsearch[async]==8.17.0
+
+# PDF extraction
+pdfplumber==0.11.4
+PyMuPDF==1.25.3
+# camelot-py  # requires ghostscript system dependency
+
+# Excel
+pandas==2.2.3
+openpyxl==3.1.5
+xlrd==2.0.1
+
+# Word
+python-docx==1.1.2
+docx2txt==0.8
+
+# Email
+extract-msg==0.52.0
+
+# PowerPoint
+python-pptx==1.0.2
+
+# Image / OCR (requires tesseract installed on system)
+pytesseract==0.3.13
+opencv-python-headless==4.11.0.86
+Pillow==11.1.0
+
+# Utilities
+python-dotenv==1.0.1
+aiofiles==24.1.0
