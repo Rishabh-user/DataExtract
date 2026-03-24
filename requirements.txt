@@ -9,8 +9,6 @@ pydantic-settings==2.7.1
 sqlalchemy[asyncio]==2.0.36
 aiosqlite==0.20.0
 
-# PostgreSQL (production)
-asyncpg==0.30.0
 
 # Search (optional — only needed if ELASTICSEARCH_ENABLED=true)
 # elasticsearch[async]==8.17.0

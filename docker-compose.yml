@@ -1,86 +1,17 @@
-# ============================================================
-# Production Docker Compose — Data Extraction Platform
-# ============================================================
-# Usage:
-#   docker-compose up -d              # Start all services
-#   docker-compose logs -f app        # View app logs
-#   docker-compose down               # Stop all services
-#   docker-compose up -d --build      # Rebuild & restart
-# ============================================================
-
 version: "3.9"
 
 services:
-  # ─── FastAPI Application ─────────────────────────────────
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: data-extraction-app
+    build: .
     ports:
-      - "${PORT:-8000}:8000"
+      - "8000:8000"
     env_file:
       - .env.production
     volumes:
-      - uploads_data:/app/uploads
-      - databases_data:/app/databases
-      - email_logs:/app/email_logs
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 4G          # OCR needs RAM
-          cpus: "2.0"
-        reservations:
-          memory: 1G
-
-  # ─── PostgreSQL (Main Admin Database) ────────────────────
-  postgres:
-    image: postgres:16-alpine
-    container_name: data-extraction-db
-    environment:
-      POSTGRES_USER: ${DB_USER:-extraction_user}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme_in_production}
-      POSTGRES_DB: ${DB_NAME:-extraction_db}
-    ports:
-      - "${DB_PORT:-5432}:5432"
-    volumes:
-      - pg_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-extraction_user} -d ${DB_NAME:-extraction_db}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 512M
-
-  # ─── Nginx Reverse Proxy (SSL + Static Files) ───────────
-  nginx:
-    image: nginx:alpine
-    container_name: data-extraction-nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro             # SSL certificates
-      - uploads_data:/app/uploads:ro               # Serve uploads directly
-    depends_on:
-      - app
+      - ./extraction.db:/app/extraction.db
+      - ./databases:/app/databases
+      - ./uploads:/app/uploads
+      - ./email_logs:/app/email_logs
     restart: unless-stopped
 
-volumes:
-  pg_data:
-    driver: local
-  uploads_data:
-    driver: local
-  databases_data:
-    driver: local
-  email_logs:
-    driver: local
+volumes: {}
