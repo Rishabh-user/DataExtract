@@ -376,7 +376,13 @@ async def list_projects(
     db: AsyncSession = Depends(get_db),
     api_key: APIKey = Depends(validate_api_key),
 ):
-    result = await db.execute(select(Project).order_by(Project.created_at.desc()))
+    from sqlalchemy.orm import selectinload
+
+    result = await db.execute(
+        select(Project)
+        .options(selectinload(Project.api_keys))
+        .order_by(Project.created_at.desc())
+    )
     projects = result.scalars().all()
     return [
         {
@@ -386,7 +392,7 @@ async def list_projects(
             "db_url": p.db_url if "sqlite" in p.db_url else "[remote]",
             "created_at": p.created_at.isoformat(),
             "status": p.status,
-            "api_keys_count": len(p.api_keys) if hasattr(p, "api_keys") else 0,
+            "api_keys_count": len(p.api_keys),
         }
         for p in projects
     ]

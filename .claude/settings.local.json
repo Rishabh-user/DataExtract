@@ -72,7 +72,31 @@
       "Bash(find D:/targeticon/data-extraction -not -path */.venv/* -not -path */__pycache__/* -type d)",
       "Bash(pkill -f \"uvicorn app.main:app\")",
       "Bash(docker build:*)",
-      "Bash(ls -la Dockerfile docker-compose*.yml .env* .dockerignore deploy.sh nginx/nginx.conf)"
+      "Bash(ls -la Dockerfile docker-compose*.yml .env* .dockerignore deploy.sh nginx/nginx.conf)",
+      "Bash(curl -s http://localhost:8000/api/auth/login -X POST -H \"Content-Type: application/json\" -d '{\"\"username\"\":\"\"admin\"\",\"\"password\"\":\"\"admin123\"\"}')",
+      "Bash(TOKEN=\"3351279423f9ff2ae82af8150f7ea0f18e9e12522c1bd293388757263ad09078\")",
+      "Bash(curl -s http://localhost:8000/api/stats -H \"x-api-key: $TOKEN\")",
+      "Bash(curl -s http://localhost:8000/api/filter -H \"x-api-key: $TOKEN\")",
+      "Bash(curl -s http://localhost:8000/)",
+      "Bash(curl -s http://localhost:8000/upload)",
+      "Bash(curl -s http://localhost:8000/api/projects -H \"x-api-key: 3351279423f9ff2ae82af8150f7ea0f18e9e12522c1bd293388757263ad09078\")",
+      "Bash(taskkill /f /im uvicorn.exe)",
+      "Bash(taskkill /f /im python.exe /fi \"WINDOWTITLE eq uvicorn*\")",
+      "Bash(powershell -Command \"Get-Process -Name python -ErrorAction SilentlyContinue | Where-Object {$_CommandLine -like ''*uvicorn*''} | Stop-Process -Force\")",
+      "Bash(python -c \"import app.main\")",
+      "Bash(python -m uvicorn app.main:app --port 8000)",
+      "Bash(curl -s -X POST http://localhost:8000/api/auth/login -H \"Content-Type: application/json\" -d \"{\"\"username\"\":\"\"admin\"\",\"\"password\"\":\"\"admin123\"\"}\")",
+      "Bash(__NEW_LINE_02d4f0b8f2f93934__ echo:*)",
+      "Bash(curl -s http://localhost:8000/api/stats -H \"X-API-Key: $TOKEN\")",
+      "Bash(curl -s -X POST http://localhost:8000/api/auth/generate-key -H \"Content-Type: application/json\" -d \"{\"\"project_name\"\":\"\"test_project\"\",\"\"allowed_actions\"\":[\"\"upload\"\",\"\"view\"\",\"\"search\"\",\"\"filter\"\"],\"\"allowed_file_types\"\":[\"\"*\"\"]}\")",
+      "Bash(curl -s http://localhost:8000/api/projects -H \"X-API-Key: $TOKEN\")",
+      "Bash(PROJECT_KEY=\"0c18f96bb325b8f95a095fce93a4bd8ff4821d8ffea89023716c806331b0a0c2\")",
+      "Bash(__NEW_LINE_67577ac5440bb655__ echo:*)",
+      "Bash(curl -s -X POST http://localhost:8000/api/upload -H \"X-API-Key: $PROJECT_KEY\" -F \"file=@test_image.png\" -F \"source=test\")",
+      "Bash(curl -s \"http://localhost:8000/api/filter\" -H \"X-API-Key: $PROJECT_KEY\")",
+      "Bash(curl -s \"http://localhost:8000/api/search?q=test\" -H \"X-API-Key: $PROJECT_KEY\")",
+      "Bash(1 echo:*)",
+      "Bash(TOKEN=\"3351279423f9ff2ae82af8150f7ea0f18e9e12522c1bd293388757263ad09078\" __NEW_LINE_55e3b9d2dde412c2__ echo \"=== All Projects ===\")"
     ]
   }
 }
